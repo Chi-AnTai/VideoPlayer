@@ -21,7 +21,7 @@ class VideoPlayerViewController: UIViewController,UITextFieldDelegate {
         setMuteButton()
         setURLTextField()
 
-        avPlayer.addObserver(self, forKeyPath: "isMuted", options: .new, context: nil)
+        avPlayer.addObserver(self, forKeyPath: "volume", options: .new, context: nil)
         avPlayer.addObserver(self, forKeyPath: "rate", options: .new, context: nil)
         
         
@@ -40,10 +40,11 @@ class VideoPlayerViewController: UIViewController,UITextFieldDelegate {
                 }
             }
         }
-        if keyPath == "isMuted" {
+        if keyPath == "volume" {
             
-            if let isMuted = change?[NSKeyValueChangeKey.newKey] as? Bool {
-                if isMuted  {
+            
+            if let isMuted = change?[NSKeyValueChangeKey.newKey] as? Float {
+                if isMuted == 0.0  {
                     muteButton?.setTitle("unMute", for: .normal)
                     
                 }
@@ -89,7 +90,7 @@ class VideoPlayerViewController: UIViewController,UITextFieldDelegate {
     }
     
     func setMuteButton() {
-        muteButton = UIButton(frame: CGRect(x: self.view.frame.size.width-60.0, y: self.view.frame.size.height-60.0, width: 60.0, height: 60.0))
+        muteButton = UIButton(frame: CGRect(x: self.view.frame.size.width-80.0, y: self.view.frame.size.height-60.0, width: 80.0, height: 60.0))
         muteButton?.setTitle("mute", for: .normal)
         muteButton?.addTarget(self, action: #selector(muteButtonAction), for: .touchUpInside)
         
@@ -99,10 +100,12 @@ class VideoPlayerViewController: UIViewController,UITextFieldDelegate {
     func muteButtonAction(sender: UIButton) {
         if let title = sender.titleLabel?.text  {
             if title == "mute" {
-                avPlayer.isMuted = true
+                
+                avPlayer.volume = 0
             }
             else {
-                avPlayer.isMuted = false            }
+                avPlayer.volume = 3
+            }
             
             
         }
@@ -111,6 +114,8 @@ class VideoPlayerViewController: UIViewController,UITextFieldDelegate {
     
     func setURLTextField() {
         let urlTextField = UITextField(frame: CGRect(x: 8.0, y: 27.0, width: 359.0, height: 30.0))
+        urlTextField.placeholder = "Enter URL of video"
+        urlTextField.textAlignment = .center
         urlTextField.backgroundColor = UIColor.white
         urlTextField.delegate = self
         urlTextField.addTarget(self, action: #selector(textFieldDidEnd(textField:)), for: .editingDidEnd)
